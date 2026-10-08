@@ -8,6 +8,7 @@ import {
   EyeOff,
   ArrowRight,
   ShieldCheck,
+  Home,
 } from 'lucide-react'
 import { verifyAdmin } from '../lib/jsonbin'
 
@@ -141,7 +142,7 @@ export default function AdminLogin() {
       {/* ═══════════ RIGHT SIDE — Login Form ═══════════ */}
       <div className="relative flex w-full items-center justify-center overflow-hidden px-6 py-12 lg:w-1/2">
 
-        {/* Grid net */}
+        {/* Grid net background */}
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{
@@ -162,6 +163,7 @@ export default function AdminLogin() {
 
         <div className="relative w-full max-w-md">
 
+          {/* Mobile logo */}
           <div className="mb-8 flex justify-center lg:hidden">
             <img
               src="https://i.postimg.cc/1zQ50bs3/uru-1-removebg-preview.png"
@@ -287,6 +289,24 @@ export default function AdminLogin() {
 
         </div>
       </div>
+
+      {/* ═══════════ Floating "Back to Website" ═══════════ */}
+      <motion.a
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        href="/"
+        aria-label="Back to website"
+        className="group fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-neutral-900/90 text-white shadow-2xl backdrop-blur-xl transition-all duration-300 hover:border-amber-400 hover:bg-amber-500 hover:text-black sm:bottom-8 sm:right-8 sm:h-14 sm:w-14"
+      >
+        <Home size={20} className="sm:hidden" />
+        <Home size={22} className="hidden sm:block" />
+
+        {/* Subtle pulse ring */}
+        <span className="pointer-events-none absolute inset-0 rounded-full border border-amber-400/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      </motion.a>
 
     </div>
   )
