@@ -5,66 +5,21 @@
 export const brandInfo = {
   name: 'Urudodo Collections',
   tagline: 'Threads of Rwandan Elegance',
-  subtitle: 'Proudly Made in Rwanda since 2015',
+  subtitle: 'Proudly Made in Rwanda since 2019',
   origin:
-    'Urudodo Collections was founded in July 2015 in Kigali, Rwanda. The name "Urudodo" comes from Kinyarwanda, meaning "thread" — a symbol of the craftsmanship woven into every piece we create.',
+    'Urudodo Collections was founded in 2019 in Kigali, Rwanda by MUVARA Daniel. The name "Urudodo" comes from Kinyarwanda, meaning "thread" — a symbol of the craftsmanship woven into every piece we create.',
   mission:
     'We attract a global market to our brand and aim to create a footprint for the next generation in fashion in Rwanda.',
   unique:
     'We mix batik and other fabrics to create an original Afro-European look — casual and smart apparel inspired by Rwandan and African traditions.',
-  founded: 'July 2015',
-  founders: 'Laurene Rwema Umutoni & Natalie Mukahigiro',
+  founded: '2019',
+  founders: 'MUVARA Daniel',
   location: 'Kigali, Rwanda',
 }
 
 // ─────────────────────────────────────────────
-// PRODUCTS
+// CATEGORIES
 // ─────────────────────────────────────────────
-
-export const products = [
-  {
-    id: 1,
-    name: 'Batik Print Shirt',
-    category: 'Men',
-    image: 'https://i.postimg.cc/j55VzY3y/ur3.jpg',
-    description: 'Handcrafted batik fabric with an Afro-European cut.',
-  },
-  {
-    id: 2,
-    name: 'African Print Dress',
-    category: 'Women',
-    image: 'https://i.postimg.cc/kgQdCctb/ur4.jpg',
-    description: 'Modern silhouette with traditional Rwandan patterns.',
-  },
-  {
-    id: 3,
-    name: 'Custom Wedding Gown',
-    category: 'Wedding',
-    image: 'https://i.postimg.cc/PJ0kXV4d/ur5.jpg',
-    description: 'Made-to-measure bridal piece, tailored to your vision.',
-  },
-  {
-    id: 4,
-    name: 'Smart Casual Blazer',
-    category: 'Men',
-    image: 'https://i.postimg.cc/KY5FPNZs/ur6.jpg',
-    description: 'Structured fit with subtle batik detailing.',
-  },
-  {
-    id: 5,
-    name: 'Evening Wrap Dress',
-    category: 'Women',
-    image: 'https://i.postimg.cc/c1kxkXQq/ur7.jpg',
-    description: 'Elegant wrap design for special occasions.',
-  },
-  {
-    id: 6,
-    name: 'Bridal Party Set',
-    category: 'Wedding',
-    image: 'https://i.postimg.cc/3NNKJvQt/ur8.jpg',
-    description: 'Coordinated pieces for the full bridal party.',
-  },
-]
 
 export const categories = ['All', 'Men', 'Women', 'Wedding']
 
@@ -113,7 +68,7 @@ export const visitInfo = {
 }
 
 // ─────────────────────────────────────────────
-// CONTACT — real email + phone
+// CONTACT
 // ─────────────────────────────────────────────
 
 export const contactInfo = {
@@ -125,7 +80,7 @@ export const contactInfo = {
 }
 
 // ─────────────────────────────────────────────
-// BRAND LINKS — real Urudodo Collections accounts
+// BRAND LINKS
 // ─────────────────────────────────────────────
 
 export const brandLinks = [
@@ -152,7 +107,7 @@ export const brandLinks = [
 ]
 
 // ─────────────────────────────────────────────
-// LEGACY socialLinks — kept for compatibility
+// LEGACY socialLinks
 // ─────────────────────────────────────────────
 
 export const socialLinks = [

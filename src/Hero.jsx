@@ -4,7 +4,7 @@ import { ArrowRight, ChevronDown } from 'lucide-react'
 import { brandInfo } from './data'
 
 const heroImages = [
-  'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQneZZ1wGeOx233yJpPJ6pk_oik5HW_oDEOAGVOdnZONg&s=10',
   'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&q=80',
   'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1600&q=80',
   'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80',
@@ -21,7 +21,7 @@ function Hero() {
   }, [])
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-black">
+    <section className="relative h-200 w-full overflow-hidden bg-black">
 
       {/* Background images */}
       {heroImages.map((img, index) => (
@@ -99,26 +99,7 @@ function Hero() {
         </div>
       </div>
 
-      {/* Dots */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-2"
-      >
-        {heroImages.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentImage(index)}
-            aria-label={`Go to image ${index + 1}`}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              index === currentImage
-                ? 'w-8 bg-amber-400'
-                : 'w-2 bg-white/50 hover:bg-white/80'
-            }`}
-          />
-        ))}
-      </motion.div>
+      
 
       {/* Scroll-down arrow */}
       <motion.a

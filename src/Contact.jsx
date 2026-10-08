@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import {
   FaYoutube,
   FaLinkedinIn,
@@ -13,8 +13,11 @@ import {
   Send,
   CheckCircle,
   MessageCircle,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react'
 import { contactInfo, brandLinks, brandInfo } from './data'
+import { addMessage } from './lib/jsonbin'
 
 const iconMap = {
   YouTube: FaYoutube,
@@ -53,8 +56,11 @@ function Contact() {
       : '',
   })
 
+  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
+  // Prefill message when the URL param changes
   useEffect(() => {
     if (productFromUrl) {
       setFormData((prev) => ({
@@ -68,31 +74,54 @@ function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSubmitError('')
+    setSubmitting(true)
 
-    const subject = encodeURIComponent(`Inquiry from ${formData.name}`)
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\n${formData.message}`
-    )
+    try {
+      const newMessage = {
+        id: Date.now(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+        product: productFromUrl || null,
+        read: false,
+        createdAt: new Date().toISOString(),
+      }
 
-    window.location.href = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`
+      await addMessage(newMessage)
 
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 5000)
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+      })
+
+      setSubmitting(false)
+      setSubmitted(true)
+      setTimeout(() => setSubmitted(false), 6000)
+    } catch (err) {
+      console.error('Submit error:', err)
+      setSubmitError('Could not send your message. Please try again.')
+      setSubmitting(false)
+    }
   }
 
   const whatsappNumber = contactInfo.whatsapp.replace(/\D/g, '')
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
     contactInfo.whatsappMessage
   )}`
+
   const telNumber = contactInfo.phone.replace(/\s/g, '')
 
   return (
     <section id="contact" className="bg-neutral-50 py-24">
       <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
 
-        {/* Header */}
+        {/* ═══ Header ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -114,9 +143,8 @@ function Contact() {
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
 
-          {/* Left: contact info */}
+          {/* ═══ LEFT: Contact info ═══ */}
           <div>
-
             <motion.h3
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -134,7 +162,6 @@ function Contact() {
               viewport={{ once: true, amount: 0.2 }}
               className="space-y-5"
             >
-
               {/* Email */}
               <motion.a
                 variants={itemVariants}
@@ -208,7 +235,6 @@ function Contact() {
                   </p>
                 </div>
               </motion.a>
-
             </motion.div>
 
             {/* Brand icons */}
@@ -246,10 +272,9 @@ function Contact() {
                 })}
               </div>
             </motion.div>
-
           </div>
 
-          {/* Right: form */}
+          {/* ═══ RIGHT: Form ═══ */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -257,50 +282,116 @@ function Contact() {
             transition={{ duration: 0.9, delay: 0.2 }}
             className="rounded-3xl bg-white p-8 shadow-lg md:p-10"
           >
-
             <h3 className="mb-6 text-2xl font-bold text-gray-900">
               Send a Message
             </h3>
 
+            {/* Success banner */}
+            <AnimatePresence>
+              {submitted && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-5 overflow-hidden rounded-xl border border-green-500/30 bg-green-500/10 p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <CheckCircle
+                      size={20}
+                      className="mt-0.5 shrink-0 text-green-600"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-green-700">
+                        Message sent successfully!
+                      </p>
+                      <p className="mt-1 text-xs text-green-600">
+                        Thank you! We'll get back to you soon.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Error banner */}
+            <AnimatePresence>
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-5 overflow-hidden rounded-xl border border-red-500/30 bg-red-500/10 p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertCircle
+                      size={20}
+                      className="mt-0.5 shrink-0 text-red-600"
+                    />
+                    <p className="text-sm text-red-600">{submitError}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <form onSubmit={handleSubmit} className="space-y-5">
 
-              {[
-                { id: 'name', label: 'Your Name', type: 'text', placeholder: 'Jane Doe', required: true },
-                { id: 'email', label: 'Email Address', type: 'email', placeholder: 'you@example.com', required: true },
-                { id: 'phone', label: 'Phone (optional)', type: 'tel', placeholder: '+250 ...', required: false },
-              ].map((field, i) => (
-                <motion.div
-                  key={field.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 + i * 0.1, duration: 0.6 }}
+              <div>
+                <label
+                  htmlFor="name"
+                  className="mb-2 block text-sm font-semibold text-gray-700"
                 >
-                  <label
-                    htmlFor={field.id}
-                    className="mb-2 block text-sm font-semibold text-gray-700"
-                  >
-                    {field.label}
-                  </label>
-                  <input
-                    id={field.id}
-                    name={field.id}
-                    type={field.type}
-                    required={field.required}
-                    value={formData[field.id]}
-                    onChange={handleChange}
-                    placeholder={field.placeholder}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
-                  />
-                </motion.div>
-              ))}
+                  Your Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Jane Doe"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                />
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.6, duration: 0.6 }}
-              >
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-semibold text-gray-700"
+                >
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="mb-2 block text-sm font-semibold text-gray-700"
+                >
+                  Phone (optional)
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+250 ..."
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                />
+              </div>
+
+              <div>
                 <label
                   htmlFor="message"
                   className="mb-2 block text-sm font-semibold text-gray-700"
@@ -317,22 +408,22 @@ function Contact() {
                   placeholder="Tell us what you're looking for..."
                   className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
                 />
-              </motion.div>
+              </div>
 
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <button
                 type="submit"
-                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-black px-6 py-4 font-semibold text-white transition-colors duration-300 hover:bg-amber-500 hover:text-black"
+                disabled={submitting}
+                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-black px-6 py-4 font-semibold text-white transition-all duration-300 hover:bg-amber-500 hover:text-black disabled:opacity-60"
               >
-                {submitted ? (
+                {submitting ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Sending...
+                  </>
+                ) : submitted ? (
                   <>
                     <CheckCircle size={20} />
-                    Message Ready
+                    Message Sent
                   </>
                 ) : (
                   <>
@@ -343,18 +434,7 @@ function Contact() {
                     />
                   </>
                 )}
-              </motion.button>
-
-              {submitted && (
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center text-sm text-green-600"
-                >
-                  Your email app should open. If not, contact us at{' '}
-                  <span className="font-semibold">{contactInfo.email}</span>.
-                </motion.p>
-              )}
+              </button>
 
             </form>
 
