@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   Package,
@@ -18,6 +18,8 @@ import {
   Save,
   Check,
   AlertCircle,
+  Upload,
+  Link as LinkIcon,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import {
@@ -27,6 +29,7 @@ import {
   deleteProduct,
   getMessages,
 } from '../lib/jsonbin'
+import { uploadImage } from '../lib/imgbb'
 
 const EMPTY_FORM = {
   id: null,
@@ -62,10 +65,13 @@ export default function AdminDashboard() {
   const [saved, setSaved] = useState(false)
   const [formError, setFormError] = useState('')
 
+  const [uploading, setUploading] = useState(false)
+  const [imageMode, setImageMode] = useState('file')
+  const fileInputRef = useRef(null)
+
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
-  // ── Load products + messages ──
   const load = async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true)
@@ -90,7 +96,6 @@ export default function AdminDashboard() {
     load()
   }, [])
 
-  // ── Derived values ──
   const categories = [...new Set(products.map((p) => p.category))]
 
   const filtered = products.filter((p) => {
@@ -103,16 +108,16 @@ export default function AdminDashboard() {
   const recentMessages = [...messages].reverse().slice(0, 3)
   const unreadCount = messages.filter((m) => !m.read).length
 
-  // ── Open add ──
   const openAdd = () => {
     setForm(EMPTY_FORM)
     setIsEditing(false)
     setShowForm(true)
     setFormError('')
     setSaved(false)
+    setImageMode('file')
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  // ── Open edit ──
   const openEdit = (product) => {
     setForm({
       id: product.id,
@@ -126,6 +131,7 @@ export default function AdminDashboard() {
     setShowForm(true)
     setFormError('')
     setSaved(false)
+    setImageMode('url')
 
     setTimeout(() => {
       document
@@ -140,12 +146,46 @@ export default function AdminDashboard() {
     setForm(EMPTY_FORM)
     setFormError('')
     setSaved(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  // ── Submit ──
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setFormError('Please select an image file (JPG, PNG, WEBP)')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError('Image must be under 5MB')
+      return
+    }
+
+    setFormError('')
+    setUploading(true)
+
+    try {
+      const url = await uploadImage(file)
+      setForm((prev) => ({ ...prev, image: url }))
+    } catch (err) {
+      console.error('Upload error:', err)
+      setFormError('Could not upload image. Try again or paste a URL instead.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setFormError('')
+
+    if (!form.image) {
+      setFormError('Please upload an image or paste an image URL')
+      return
+    }
+
     setSaving(true)
 
     try {
@@ -162,7 +202,6 @@ export default function AdminDashboard() {
               }
             : p
         )
-
         await saveProducts(updated)
         setProducts(updated)
       } else {
@@ -174,7 +213,6 @@ export default function AdminDashboard() {
           price: form.price.trim(),
           image: form.image.trim(),
         }
-
         await addProduct(newProduct)
         const updated = await getProducts()
         setProducts(updated)
@@ -183,16 +221,13 @@ export default function AdminDashboard() {
       setSaving(false)
       setSaved(true)
 
-      setTimeout(() => {
-        closeForm()
-      }, 1200)
+      setTimeout(() => closeForm(), 1200)
     } catch (err) {
       setFormError(err.message || 'Could not save product')
       setSaving(false)
     }
   }
 
-  // ── Delete ──
   const handleDelete = async (id) => {
     setDeleting(true)
     try {
@@ -206,7 +241,6 @@ export default function AdminDashboard() {
     }
   }
 
-  // ── Stats (3 cards, no Total Value) ──
   const stats = [
     {
       label: 'Total Products',
@@ -245,15 +279,11 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8">
 
-      {/* ═══ HEADER ═══ */}
+      {/* HEADER */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white md:text-4xl">
-            Dashboard
-          </h1>
-          <p className="mt-2 text-gray-400">
-            Manage all your collections from here.
-          </p>
+          <h1 className="text-3xl font-bold text-white md:text-4xl">Dashboard</h1>
+          <p className="mt-2 text-gray-400">Manage all your collection from here.</p>
         </div>
 
         <button
@@ -272,7 +302,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ═══ STATS (3 cards) ═══ */}
+      {/* STATS */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat, i) => {
           const Icon = stat.icon
@@ -307,7 +337,7 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* ═══ ADD BUTTON + SEARCH ═══ */}
+      {/* ADD + SEARCH */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
         <motion.button
@@ -367,7 +397,7 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* ═══ FORM ═══ */}
+      {/* FORM */}
       <AnimatePresence>
         {showForm && (
           <motion.div
@@ -469,17 +499,103 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-gray-400">
-                        Image URL
+                        Product Image
                       </label>
-                      <input
-                        required
-                        value={form.image}
-                        onChange={(e) =>
-                          setForm({ ...form, image: e.target.value })
-                        }
-                        placeholder="https://i.postimg.cc/..."
-                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-amber-400"
-                      />
+
+                      <div className="mb-4 inline-flex rounded-xl border border-white/10 bg-white/5 p-1">
+                        <button
+                          type="button"
+                          onClick={() => setImageMode('file')}
+                          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
+                            imageMode === 'file'
+                              ? 'bg-amber-500 text-black'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          <Upload size={14} />
+                          Upload File
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setImageMode('url')}
+                          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
+                            imageMode === 'url'
+                              ? 'bg-amber-500 text-black'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          <LinkIcon size={14} />
+                          Paste URL
+                        </button>
+                      </div>
+
+                      {imageMode === 'file' && (
+                        <>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            id="product-image-file"
+                          />
+
+                          <label
+                            htmlFor="product-image-file"
+                            className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/[0.02] p-8 text-center transition-colors hover:border-amber-400/50"
+                          >
+                            {uploading ? (
+                              <>
+                                <Loader2
+                                  size={32}
+                                  className="mb-3 animate-spin text-amber-500"
+                                />
+                                <p className="text-sm text-amber-400">
+                                  Uploading image...
+                                </p>
+                              </>
+                            ) : form.image ? (
+                              <>
+                                <Check
+                                  size={32}
+                                  className="mb-3 text-green-400"
+                                />
+                                <p className="text-sm text-green-400">
+                                  Image uploaded successfully
+                                </p>
+                                <p className="mt-1 text-xs text-gray-500">
+                                  Click to choose a different file
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <Upload
+                                  size={32}
+                                  className="mb-3 text-gray-500"
+                                />
+                                <p className="text-sm text-gray-400">
+                                  Click to upload an image
+                                </p>
+                                <p className="mt-1 text-xs text-gray-600">
+                                  JPG, PNG, WEBP · Max 5MB
+                                </p>
+                              </>
+                            )}
+                          </label>
+                        </>
+                      )}
+
+                      {imageMode === 'url' && (
+                        <input
+                          type="url"
+                          value={form.image}
+                          onChange={(e) =>
+                            setForm({ ...form, image: e.target.value })
+                          }
+                          placeholder="https://i.postimg.cc/..."
+                          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none focus:border-amber-400"
+                        />
+                      )}
                     </div>
 
                   </div>
@@ -497,7 +613,7 @@ export default function AdminDashboard() {
                             className="aspect-[3/4] w-full object-cover"
                             onError={(e) => {
                               e.target.src =
-                                'https://via.placeholder.com/300x400?text=Invalid+URL'
+                                'https://via.placeholder.com/300x400?text=Invalid+Image'
                             }}
                           />
                         ) : (
@@ -516,7 +632,7 @@ export default function AdminDashboard() {
 
                     <button
                       type="submit"
-                      disabled={saving || saved}
+                      disabled={saving || saved || uploading || !form.image}
                       className={`flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold shadow-lg transition-all ${
                         saved
                           ? 'bg-green-500 text-white'
@@ -558,7 +674,7 @@ export default function AdminDashboard() {
         )}
       </AnimatePresence>
 
-      {/* ═══ PRODUCTS GRID ═══ */}
+      {/* PRODUCTS GRID */}
       <div>
         <div className="mb-5 flex items-center justify-between">
           <div>
@@ -661,10 +777,9 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* ═══ RECENT + MESSAGES + LIVE SITE ═══ */}
+      {/* RECENT + MESSAGES + LIVE SITE */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-        {/* Recent Products */}
         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.04]"
@@ -711,7 +826,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent Messages */}
         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.04]"
@@ -772,7 +886,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Live Site */}
         <a
           href="/collections"
           target="_blank"
@@ -800,7 +913,7 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* ═══ DELETE MODAL ═══ */}
+      {/* DELETE MODAL */}
       <AnimatePresence>
         {confirmDelete && (
           <>
@@ -815,45 +928,43 @@ export default function AdminDashboard() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 p-6 shadow-2xl"
+              className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-neutral-900 p-6 shadow-2xl"
             >
-              <div className="relative">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
-                  <Trash2 size={22} className="text-red-400" />
-                </div>
-                <h3 className="mb-2 text-lg font-bold text-white">
-                  Delete product?
-                </h3>
-                <p className="mb-6 text-sm text-gray-400">
-                  Are you sure you want to delete{' '}
-                  <span className="font-semibold text-white">
-                    "{confirmDelete.name}"
-                  </span>
-                  ? This cannot be undone.
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setConfirmDelete(null)}
-                    disabled={deleting}
-                    className="flex-1 rounded-xl border border-white/10 py-3 text-sm font-medium text-white hover:bg-white/5 disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => handleDelete(confirmDelete.id)}
-                    disabled={deleting}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-3 text-sm font-semibold text-white hover:bg-red-400 disabled:opacity-50"
-                  >
-                    {deleting ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        Deleting...
-                      </>
-                    ) : (
-                      'Delete'
-                    )}
-                  </button>
-                </div>
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+                <Trash2 size={22} className="text-red-400" />
+              </div>
+              <h3 className="mb-2 text-lg font-bold text-white">
+                Delete product?
+              </h3>
+              <p className="mb-6 text-sm text-gray-400">
+                Are you sure you want to delete{' '}
+                <span className="font-semibold text-white">
+                  "{confirmDelete.name}"
+                </span>
+                ? This cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setConfirmDelete(null)}
+                  disabled={deleting}
+                  className="flex-1 rounded-xl border border-white/10 py-3 text-sm font-medium text-white hover:bg-white/5 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDelete(confirmDelete.id)}
+                  disabled={deleting}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 py-3 text-sm font-semibold text-white hover:bg-red-400 disabled:opacity-50"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete'
+                  )}
+                </button>
               </div>
             </motion.div>
           </>

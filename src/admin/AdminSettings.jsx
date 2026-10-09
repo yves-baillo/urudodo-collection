@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import {
   User,
@@ -11,8 +11,11 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
+  Upload,
+  Link as LinkIcon,
 } from 'lucide-react'
 import { getAdmin, saveAdmin } from '../lib/jsonbin'
+import { uploadImage } from '../lib/imgbb'
 
 export default function AdminSettings() {
   const [loading, setLoading] = useState(true)
@@ -27,6 +30,11 @@ export default function AdminSettings() {
   })
 
   const [showPassword, setShowPassword] = useState(false)
+
+  // Image upload
+  const [uploading, setUploading] = useState(false)
+  const [imageMode, setImageMode] = useState('file')
+  const fileInputRef = useRef(null)
 
   // Load existing admin settings
   useEffect(() => {
@@ -50,6 +58,36 @@ export default function AdminSettings() {
   const handleChange = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value })
 
+  // ── File upload ──
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file (JPG, PNG, WEBP)')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be under 5MB')
+      return
+    }
+
+    setError('')
+    setUploading(true)
+
+    try {
+      const url = await uploadImage(file)
+      setForm((prev) => ({ ...prev, avatar: url }))
+    } catch (err) {
+      console.error('Upload error:', err)
+      setError('Could not upload image. Try again or paste a URL instead.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  // ── Submit ──
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -62,13 +100,11 @@ export default function AdminSettings() {
         avatar: form.avatar.trim(),
       })
 
-      // Update localStorage so header reflects immediately
       localStorage.setItem('adminUsername', form.username.trim())
 
       setSaving(false)
       setSaved(true)
 
-      // Force the page to reflect new data
       setTimeout(() => {
         setSaved(false)
         window.location.reload()
@@ -90,7 +126,7 @@ export default function AdminSettings() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
 
-      {/* ═══ HEADER ═══ */}
+      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold text-white md:text-4xl">Settings</h1>
         <p className="mt-2 text-gray-400">
@@ -118,10 +154,10 @@ export default function AdminSettings() {
             Profile Picture
           </h2>
 
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
 
             {/* Preview */}
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-amber-500/30 bg-neutral-900">
+            <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-amber-500/30 bg-neutral-900">
               {form.avatar ? (
                 <img
                   src={form.avatar}
@@ -132,27 +168,114 @@ export default function AdminSettings() {
                   }}
                 />
               ) : (
-                <User size={36} className="text-gray-600" />
+                <User size={40} className="text-gray-600" />
               )}
             </div>
 
-            {/* URL input */}
+            {/* Input methods */}
             <div className="flex-1">
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-gray-400">
-                Image URL
-              </label>
-              <input
-                type="url"
-                value={form.avatar}
-                onChange={handleChange('avatar')}
-                placeholder="https://i.postimg.cc/..."
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none transition-all focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
-              />
-              <p className="mt-2 text-xs text-gray-500">
-                Paste an image URL from PostImages, Cloudinary, or any host.
-              </p>
-            </div>
 
+              {/* Tabs */}
+              <div className="mb-4 inline-flex rounded-xl border border-white/10 bg-white/5 p-1">
+                <button
+                  type="button"
+                  onClick={() => setImageMode('file')}
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
+                    imageMode === 'file'
+                      ? 'bg-amber-500 text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Upload size={14} />
+                  Upload File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageMode('url')}
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
+                    imageMode === 'url'
+                      ? 'bg-amber-500 text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <LinkIcon size={14} />
+                  Paste URL
+                </button>
+              </div>
+
+              {/* File upload */}
+              {imageMode === 'file' && (
+                <>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="avatar-file"
+                  />
+
+                  <label
+                    htmlFor="avatar-file"
+                    className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/[0.02] p-6 text-center transition-colors hover:border-amber-400/50"
+                  >
+                    {uploading ? (
+                      <>
+                        <Loader2
+                          size={28}
+                          className="mb-2 animate-spin text-amber-500"
+                        />
+                        <p className="text-sm text-amber-400">
+                          Uploading...
+                        </p>
+                      </>
+                    ) : form.avatar ? (
+                      <>
+                        <Check
+                          size={28}
+                          className="mb-2 text-green-400"
+                        />
+                        <p className="text-sm text-green-400">
+                          Picture uploaded
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          Click to choose a different image
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload
+                          size={28}
+                          className="mb-2 text-gray-500"
+                        />
+                        <p className="text-sm text-gray-400">
+                          Click to upload a profile picture
+                        </p>
+                        <p className="mt-1 text-xs text-gray-600">
+                          JPG, PNG, WEBP · Max 5MB
+                        </p>
+                      </>
+                    )}
+                  </label>
+                </>
+              )}
+
+              {/* URL input */}
+              {imageMode === 'url' && (
+                <input
+                  type="url"
+                  value={form.avatar}
+                  onChange={handleChange('avatar')}
+                  placeholder="https://i.postimg.cc/..."
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none transition-all focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+                />
+              )}
+
+              <p className="mt-3 text-xs text-gray-500">
+                Your profile picture appears in the header and welcome toast.
+              </p>
+
+            </div>
           </div>
         </motion.div>
 
@@ -234,7 +357,7 @@ export default function AdminSettings() {
         >
           <button
             type="submit"
-            disabled={saving || saved}
+            disabled={saving || saved || uploading}
             className={`flex w-full items-center justify-center gap-2 rounded-xl py-4 font-semibold shadow-lg transition-all ${
               saved
                 ? 'bg-green-500 text-white shadow-green-500/30'
