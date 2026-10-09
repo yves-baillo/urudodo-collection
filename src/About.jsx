@@ -41,7 +41,6 @@ const GRID_STYLE = {
   backgroundSize: '40px 40px',
 }
 
-// Count-up hook
 function useCountUp(target, start, duration = 2000) {
   const [count, setCount] = useState(0)
 
@@ -166,15 +165,17 @@ function About() {
               {brandInfo.origin}
             </p>
 
-            <div className="relative mb-8 overflow-hidden rounded-2xl bg-amber-50 p-6 pl-16">
+            {/* Mission quote — fixed layout with flexbox */}
+            <div className="relative mb-8 overflow-hidden rounded-2xl bg-amber-50 p-6">
               <div
                 className="pointer-events-none absolute inset-0 opacity-[0.4]"
                 style={GRID_STYLE}
               />
-              <div className="relative">
+
+              <div className="relative flex items-start gap-4">
                 <Quote
-                  size={32}
-                  className="absolute top-0 left-0 text-amber-400"
+                  size={28}
+                  className="mt-1 shrink-0 text-amber-400"
                 />
                 <p className="italic leading-relaxed text-gray-800">
                   {brandInfo.mission}
@@ -220,7 +221,7 @@ function About() {
             </div>
           </motion.div>
 
-          {/* Image collage — founder on top-right, second image bottom-left */}
+          {/* Image collage */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -235,14 +236,13 @@ function About() {
             >
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrnZ4ioF_z86K6BE8yOPFIw__8J1j9q--7c-4e0GAeig&s=10"
-                alt="MUVARA Daniel — Founder of Urudodo Collection"
+                alt="MUVARA Daniel — Founder of Urudodo Collections"
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   e.target.src =
                     'https://via.placeholder.com/400x400?text=Founder'
                 }}
               />
-              {/* Founder label */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
                 <p className="text-sm font-bold text-white">
                   MUVARA Daniel
@@ -369,6 +369,7 @@ function About() {
           </div>
         </div>
 
+        {/* Dots */}
         <div className="absolute bottom-6 right-6 z-10 flex gap-2 md:bottom-8 md:right-10">
           {BANNER_IMAGES.map((_, i) => (
             <button
@@ -404,7 +405,7 @@ function About() {
               to="/collections"
               className="group inline-flex items-center gap-2 rounded-full bg-black px-8 py-4 font-semibold text-white transition-colors duration-300 hover:bg-amber-500 hover:text-black"
             >
-              View Our Collections
+              View Our Collection
               <ArrowRight
                 size={20}
                 className="transition-transform duration-300 group-hover:translate-x-1"

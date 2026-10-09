@@ -62,10 +62,10 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen bg-neutral-950">
+    <div className="flex min-h-screen flex-col bg-neutral-950 lg:flex-row">
 
-      {/* ═══════════ LEFT SIDE — Looping Images ═══════════ */}
-      <div className="relative hidden w-1/2 overflow-hidden lg:block">
+      {/* ═══════════ LEFT / TOP — Looping Images ═══════════ */}
+      <div className="relative h-[40vh] w-full overflow-hidden lg:h-screen lg:w-1/2">
 
         <AnimatePresence mode="sync">
           <motion.div
@@ -78,7 +78,7 @@ export default function AdminLogin() {
           >
             <img
               src={SIDE_IMAGES[bgIndex]}
-              alt="Urudodo Collections"
+              alt="Urudodo Collection"
               className="h-full w-full object-cover"
             />
           </motion.div>
@@ -86,16 +86,18 @@ export default function AdminLogin() {
 
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/80" />
 
-        <div className="relative z-10 flex h-full flex-col justify-between p-12">
+        <div className="relative z-10 flex h-full flex-col justify-between p-6 lg:p-12">
 
+          {/* Logo top */}
           <div className="flex items-center gap-3">
             <img
               src="https://i.postimg.cc/1zQ50bs3/uru-1-removebg-preview.png"
               alt="Urudodo"
-              className="h-12 w-auto"
+              className="h-10 w-auto lg:h-12"
             />
           </div>
 
+          {/* Center text */}
           <div className="max-w-md">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -109,18 +111,19 @@ export default function AdminLogin() {
                 </span>
               </div>
 
-              <h1 className="mb-4 text-4xl font-bold leading-tight text-white">
+              <h1 className="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
                 Manage your <br />
-                <span className="text-amber-400">Urudodo Collections</span>
+                <span className="text-amber-400">Urudodo Collection</span>
               </h1>
 
-              <p className="text-gray-300">
+              <p className="hidden text-gray-300 sm:block lg:text-base">
                 Sign in to add new pieces, manage products, and keep your
                 collection up to date.
               </p>
             </motion.div>
           </div>
 
+          {/* Dots */}
           <div className="flex items-center gap-3">
             {SIDE_IMAGES.map((_, i) => (
               <button
@@ -129,7 +132,7 @@ export default function AdminLogin() {
                 aria-label={`Image ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-500 ${
                   i === bgIndex
-                    ? 'w-10 bg-amber-400'
+                    ? 'w-8 bg-amber-400'
                     : 'w-1.5 bg-white/40 hover:bg-white/70'
                 }`}
               />
@@ -139,10 +142,10 @@ export default function AdminLogin() {
         </div>
       </div>
 
-      {/* ═══════════ RIGHT SIDE — Login Form ═══════════ */}
-      <div className="relative flex w-full items-center justify-center overflow-hidden px-6 py-12 lg:w-1/2">
+      {/* ═══════════ RIGHT / BOTTOM — Login Form ═══════════ */}
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-12 lg:w-1/2">
 
-        {/* Grid net background */}
+        {/* Grid net */}
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{
@@ -162,15 +165,6 @@ export default function AdminLogin() {
         />
 
         <div className="relative w-full max-w-md">
-
-          {/* Mobile logo */}
-          <div className="mb-8 flex justify-center lg:hidden">
-            <img
-              src="https://i.postimg.cc/1zQ50bs3/uru-1-removebg-preview.png"
-              alt="Urudodo"
-              className="h-14 w-auto"
-            />
-          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -304,7 +298,6 @@ export default function AdminLogin() {
         <Home size={20} className="sm:hidden" />
         <Home size={22} className="hidden sm:block" />
 
-        {/* Subtle pulse ring */}
         <span className="pointer-events-none absolute inset-0 rounded-full border border-amber-400/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </motion.a>
 
