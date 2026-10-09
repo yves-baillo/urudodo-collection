@@ -162,7 +162,7 @@ function Contact() {
               viewport={{ once: true, amount: 0.2 }}
               className="space-y-5"
             >
-              {/* Email */}
+              {/* Email 1 */}
               <motion.a
                 variants={itemVariants}
                 whileHover={{ y: -6, scale: 1.02 }}
@@ -182,6 +182,30 @@ function Contact() {
                   </p>
                   <p className="break-all text-base font-medium text-gray-900">
                     {contactInfo.email}
+                  </p>
+                </div>
+              </motion.a>
+
+              {/* Email 2 */}
+              <motion.a
+                variants={itemVariants}
+                whileHover={{ y: -6, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                href={`mailto:${contactInfo.email2}`}
+                className="group flex items-start gap-4 rounded-2xl bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-lg"
+              >
+                <motion.div
+                  whileHover={{ rotate: 8 }}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-500 group-hover:text-white"
+                >
+                  <Mail size={22} />
+                </motion.div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    Email
+                  </p>
+                  <p className="break-all text-base font-medium text-gray-900">
+                    {contactInfo.email2}
                   </p>
                 </div>
               </motion.a>

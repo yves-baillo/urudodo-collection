@@ -7,7 +7,7 @@ import { getProducts } from './lib/jsonbin'
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
-  { name: 'Collection', path: '/collections' },
+  { name: 'Collections', path: '/collections' },
   { name: 'Visit Us', path: '/visit-us' },
   { name: 'Contact', path: '/contact' },
 ]
@@ -61,6 +61,7 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest('.bell-container')) {
@@ -71,6 +72,7 @@ function Navbar() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
 
+  // Lock body scroll while mobile drawer is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => {
@@ -91,60 +93,44 @@ function Navbar() {
 
   return (
     <>
-      {/* ── Header ── */}
+      {/* ═══ Header ═══ */}
       <header
         className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
           solid
-            ? 'bg-[#2a2a2a]/60 backdrop-blur-2xl shadow-lg border-b border-white/10 py-1'
-            : 'bg-transparent py-2'
+            ? 'bg-[#2a2a2a]/60 backdrop-blur-2xl shadow-lg border-b border-white/10'
+            : 'bg-transparent'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-8 lg:px-12">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4 md:px-8 lg:px-12">
 
-          {/* Logo — enhanced */}
+          {/* Logo */}
           <NavLink
             to="/"
             onClick={closeMenu}
-            className="group flex shrink-0 items-center"
+            className="flex shrink-0 items-center"
           >
-            <div className="relative">
-              <img
-                src={LOGO_URL}
-                alt={brandInfo.name}
-                className="h-12 w-auto drop-shadow-lg transition-all duration-500 group-hover:scale-105 sm:h-16 md:h-20"
-              />
-              {/* Subtle glow behind logo */}
-              <div className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-amber-400/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
-            </div>
+            <img
+              src={LOGO_URL}
+              alt={brandInfo.name}
+              className="h-10 w-auto transition-all duration-500 sm:h-12 md:h-14"
+            />
           </NavLink>
 
-          {/* Desktop nav — Playfair Display */}
-          <nav className="hidden items-center gap-8 lg:flex xl:gap-10">
+          {/* Desktop nav — smaller font */}
+          <nav className="hidden items-center gap-5 lg:flex xl:gap-7">
             {navLinks.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `group relative font-display text-sm font-medium uppercase tracking-[0.15em] transition-colors duration-300 ${
+                  `relative font-display text-[10px] font-medium uppercase tracking-[0.15em] transition-colors duration-500 ${
                     isActive
                       ? 'text-amber-300'
                       : 'text-white/90 hover:text-amber-200'
                   }`
                 }
               >
-                {({ isActive }) => (
-                  <>
-                    {link.name}
-                    {/* Underline indicator */}
-                    <span
-                      className={`absolute -bottom-1.5 left-0 h-[2px] bg-amber-400 transition-all duration-300 ${
-                        isActive
-                          ? 'w-full'
-                          : 'w-0 group-hover:w-full'
-                      }`}
-                    />
-                  </>
-                )}
+                {link.name}
               </NavLink>
             ))}
           </nav>
@@ -157,19 +143,21 @@ function Navbar() {
               <button
                 onClick={handleOpenNotifications}
                 aria-label="Notifications"
-                className="relative flex h-10 w-10 items-center justify-center rounded-full text-white/90 transition-all duration-300 hover:bg-white/10 hover:text-amber-300 sm:h-11 sm:w-11"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-all duration-300 hover:bg-white/10 hover:text-amber-300 sm:h-10 sm:w-10"
               >
-                <Bell size={22} />
+                <Bell size={20} className="sm:hidden" />
+                <Bell size={22} className="hidden sm:block" />
 
                 {notificationCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black shadow-md">
+                  <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-black shadow-md sm:h-5 sm:w-5 sm:text-[10px]">
                     {notificationCount}
                   </span>
                 )}
               </button>
 
+              {/* Dropdown */}
               {showNotifications && (
-                <div className="fixed left-3 right-3 top-20 mt-1 overflow-hidden rounded-2xl border border-white/10 bg-[#1f1f1f] shadow-2xl backdrop-blur-xl sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 sm:max-w-[90vw]">
+                <div className="fixed left-3 right-3 top-16 mt-1 overflow-hidden rounded-2xl border border-white/10 bg-[#1f1f1f] shadow-2xl backdrop-blur-xl sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 sm:max-w-[90vw]">
 
                   <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <p className="text-sm font-semibold text-white">
@@ -183,9 +171,7 @@ function Navbar() {
                   {loadingNotifs ? (
                     <div className="p-6 text-center">
                       <div className="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-                      <p className="mt-2 text-xs text-gray-500">
-                        Loading...
-                      </p>
+                      <p className="mt-2 text-xs text-gray-500">Loading...</p>
                     </div>
                   ) : latestProducts.length === 0 ? (
                     <div className="p-6 text-center">
@@ -200,7 +186,7 @@ function Navbar() {
                         <li
                           key={p.id}
                           onClick={goToCollections}
-                          className="flex cursor-pointer items-start gap-3 border-b border-white/5 p-3 transition-colors hover:bg-white/5 last:border-0"
+                          className="flex cursor-pointer items-start gap-3 border-b border-white/5 p-3 transition-colors last:border-0 hover:bg-white/5"
                         >
                           <img
                             src={p.image}
@@ -232,7 +218,7 @@ function Navbar() {
                     onClick={goToCollections}
                     className="w-full border-t border-white/10 bg-amber-500/10 px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest text-amber-400 transition-colors hover:bg-amber-500 hover:text-black"
                   >
-                    View All Collections
+                    View All Collection
                   </button>
                 </div>
               )}
@@ -241,17 +227,26 @@ function Navbar() {
             {/* Hamburger */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-10 w-10 items-center justify-center text-white/90 transition-colors duration-500 hover:text-amber-200 lg:hidden sm:h-11 sm:w-11"
+              className="flex h-9 w-9 items-center justify-center text-white/90 transition-colors duration-500 hover:text-amber-200 lg:hidden sm:h-10 sm:w-10"
               aria-label="Toggle menu"
             >
-              {isOpen ? <X size={26} /> : <Menu size={26} />}
+              {isOpen ? (
+                <X size={24} className="sm:hidden" />
+              ) : (
+                <Menu size={24} className="sm:hidden" />
+              )}
+              {isOpen ? (
+                <X size={26} className="hidden sm:block" />
+              ) : (
+                <Menu size={26} className="hidden sm:block" />
+              )}
             </button>
 
           </div>
         </div>
       </header>
 
-      {/* ── Mobile drawer ── */}
+      {/* ═══ Mobile drawer ═══ */}
 
       <div
         onClick={closeMenu}
@@ -261,7 +256,7 @@ function Navbar() {
       />
 
       <aside
-        className={`fixed top-0 right-0 z-50 h-full w-72 max-w-[85vw] overflow-y-auto bg-[#1f1f1f] p-6 pt-24 shadow-2xl transition-transform duration-300 ease-out sm:w-80 lg:hidden ${
+        className={`fixed top-0 right-0 z-50 h-full w-72 max-w-[85vw] overflow-y-auto bg-[#1f1f1f] p-6 pt-20 shadow-2xl transition-transform duration-300 ease-out sm:w-80 lg:hidden ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -273,14 +268,15 @@ function Navbar() {
           <X size={26} />
         </button>
 
-        <div className="mb-8">
+        <div className="mb-6">
           <img
             src={LOGO_URL}
             alt={brandInfo.name}
-            className="h-20 w-auto drop-shadow-lg"
+            className="h-14 w-auto sm:h-16"
           />
         </div>
 
+        {/* Mobile nav — smaller font */}
         <nav className="flex flex-col gap-1">
           {navLinks.map((link) => (
             <NavLink
@@ -288,7 +284,7 @@ function Navbar() {
               to={link.path}
               onClick={closeMenu}
               className={({ isActive }) =>
-                `rounded-lg px-4 py-3 font-display text-base font-medium uppercase tracking-[0.15em] transition-colors ${
+                `rounded-lg px-4 py-3 font-display text-sm font-medium uppercase tracking-[0.15em] transition-colors ${
                   isActive
                     ? 'bg-amber-500 text-black'
                     : 'text-white/90 hover:bg-white/10'
@@ -319,6 +315,12 @@ function Navbar() {
         >
           WhatsApp Us
         </a>
+
+        <div className="my-6 h-px bg-white/10" />
+
+        <p className="mb-3 text-xs uppercase tracking-widest text-white/40">
+          Follow Us
+        </p>
       </aside>
     </>
   )

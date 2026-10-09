@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// URUDODO COLLECTIONS — SITE DATA
+// URUDODO COLLECTION — SITE DATA
 // ─────────────────────────────────────────────
 
 export const brandInfo = {
@@ -7,7 +7,7 @@ export const brandInfo = {
   tagline: 'Threads of Rwandan Elegance',
   subtitle: 'Proudly Made in Rwanda since 2019',
   origin:
-    'Urudodo Collections was founded in 2019 in Kigali, Rwanda by MUVARA Daniel. The name "Urudodo" comes from Kinyarwanda, meaning "thread" — a symbol of the craftsmanship woven into every piece we create.',
+    'Urudodo Collection was founded in 2019 in Kigali, Rwanda by MUVARA Daniel. The name "Urudodo" comes from Kinyarwanda, meaning "thread" — a symbol of the craftsmanship woven into every piece we create.',
   mission:
     'We attract a global market to our brand and aim to create a footprint for the next generation in fashion in Rwanda.',
   unique:
@@ -22,34 +22,6 @@ export const brandInfo = {
 // ─────────────────────────────────────────────
 
 export const categories = ['All', 'Men', 'Women', 'Wedding']
-
-// ─────────────────────────────────────────────
-// TESTIMONIALS
-// ─────────────────────────────────────────────
-
-export const testimonials = [
-  {
-    id: 1,
-    quote:
-      'I wear only black, and Uzi Collections was able to create shirts that match my personality and taste.',
-    name: 'Chris Schwagga',
-    role: 'Visual Artist & Photographer',
-  },
-  {
-    id: 2,
-    quote:
-      'What I like the most is the quality of their garments. They gracefully combine materials like batik and other fabrics.',
-    name: 'Alex Niragira',
-    role: 'Creative Entrepreneur',
-  },
-  {
-    id: 3,
-    quote:
-      'Uzi Collection has always given me excellent outfits with quality fabric. Their attention to detail is unmatched.',
-    name: 'Paul Frobisher Mugambwa',
-    role: 'Associate Director, PwC',
-  },
-]
 
 // ─────────────────────────────────────────────
 // VISIT US
@@ -68,11 +40,12 @@ export const visitInfo = {
 }
 
 // ─────────────────────────────────────────────
-// CONTACT
+// CONTACT — two emails, phone, WhatsApp
 // ─────────────────────────────────────────────
 
 export const contactInfo = {
   email: 'muvaradaniel56@gmail.com',
+  email2: 'Urudodocollection@gmail.com',
   phone: '+250 789 215 052',
   whatsapp: '+250 789 215 052',
   whatsappMessage:
@@ -80,7 +53,7 @@ export const contactInfo = {
 }
 
 // ─────────────────────────────────────────────
-// BRAND LINKS
+// BRAND LINKS — real Urudodo Collection accounts
 // ─────────────────────────────────────────────
 
 export const brandLinks = [
