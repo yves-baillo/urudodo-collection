@@ -27,7 +27,6 @@ function Collections() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [showAll, setShowAll] = useState(false)
   const scrollRef = useRef(null)
 
   // ── Load products ──
@@ -61,7 +60,6 @@ function Collections() {
 
   const handleCategoryChange = (cat) => {
     setActiveCategory(cat)
-    setShowAll(false)
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' })
     }
@@ -105,7 +103,7 @@ function Collections() {
             Our Work
           </span>
           <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl md:text-5xl">
-            Urudodo Collections
+            Urudodo Collection
           </h2>
           <p className="mx-auto max-w-2xl text-sm text-gray-600 sm:text-base">
             {brandInfo.unique}
@@ -116,7 +114,7 @@ function Collections() {
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 text-gray-500">
             <Loader2 size={32} className="animate-spin text-amber-500" />
-            <p className="mt-4 text-sm">Loading collections...</p>
+            <p className="mt-4 text-sm">Loading collection...</p>
           </div>
         )}
 
@@ -124,7 +122,7 @@ function Collections() {
         {!loading && error && (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
             <p className="text-sm font-semibold text-red-700">
-              Could not load collections
+              Could not load collection
             </p>
             <p className="mt-2 text-xs text-red-600">{error}</p>
             <button
@@ -147,7 +145,7 @@ function Collections() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between"
             >
-              {/* Category pills — scroll horizontally on mobile */}
+              {/* Category pills — horizontal scroll on mobile */}
               <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
                 {CATEGORIES.map((cat) => (
                   <motion.button
@@ -203,7 +201,7 @@ function Collections() {
                     <Package size={28} className="text-amber-600" />
                   </div>
                   <h3 className="mb-2 text-lg font-bold text-gray-900 sm:text-xl">
-                    Collections coming soon
+                    Collection coming soon
                   </h3>
                   <p className="mx-auto max-w-md text-sm text-gray-500 sm:text-base">
                     We're preparing our latest pieces. Check back soon or
@@ -246,7 +244,6 @@ function Collections() {
                         style={GRID_STYLE}
                       />
 
-                      {/* Image */}
                       <div className="relative z-10 aspect-[3/4] overflow-hidden">
                         <img
                           src={product.image}
@@ -269,7 +266,6 @@ function Collections() {
                         )}
                       </div>
 
-                      {/* Info */}
                       <div className="relative z-10 p-3">
                         <h3 className="mb-1 line-clamp-1 text-xs font-bold text-gray-900">
                           {product.name}
@@ -431,4 +427,4 @@ function Collections() {
   )
 }
 
-export default Collections
+export default Collections  
