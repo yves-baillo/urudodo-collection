@@ -42,10 +42,13 @@ export default function AdminLayout() {
         setAdminUsername(admin.username || 'Admin')
         setAdminAvatar(admin.avatar || '')
         localStorage.setItem('adminUsername', admin.username || '')
+        localStorage.setItem('adminAvatar', admin.avatar || '')
       } catch (err) {
         console.error('Admin load failed:', err)
-        const saved = localStorage.getItem('adminUsername')
-        if (saved) setAdminUsername(saved)
+        const savedUsername = localStorage.getItem('adminUsername')
+        const savedAvatar = localStorage.getItem('adminAvatar')
+        if (savedUsername) setAdminUsername(savedUsername)
+        if (savedAvatar) setAdminAvatar(savedAvatar)
       }
     }
     loadAdmin()
@@ -91,6 +94,7 @@ export default function AdminLayout() {
   const handleLogout = () => {
     localStorage.removeItem('adminAuth')
     localStorage.removeItem('adminUsername')
+    localStorage.removeItem('adminAvatar')
     sessionStorage.removeItem('adminWelcomeShown')
     navigate('/admin/login')
   }
@@ -191,7 +195,6 @@ export default function AdminLayout() {
 
                     <div className="max-h-80 overflow-y-auto">
 
-                      {/* Messages section */}
                       {unreadCount > 0 && (
                         <>
                           <div className="border-b border-white/5 bg-amber-500/5 px-4 py-2">
@@ -226,7 +229,6 @@ export default function AdminLayout() {
                         </>
                       )}
 
-                      {/* Products section */}
                       {latestProducts.length > 0 && (
                         <>
                           <div className="border-b border-white/5 bg-white/5 px-4 py-2">
@@ -304,6 +306,7 @@ export default function AdminLayout() {
               <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-sm font-bold text-black">
                 {adminAvatar ? (
                   <img
+                    key={adminAvatar}
                     src={adminAvatar}
                     alt={adminUsername}
                     className="h-full w-full object-cover"
@@ -353,7 +356,7 @@ export default function AdminLayout() {
             <div className="flex items-center gap-3">
               <img
                 src={LOGO_URL}
-                alt="Urudodo Collections"
+                alt="Urudodo Collection"
                 className="h-11 w-auto"
               />
               <div>
@@ -391,7 +394,6 @@ export default function AdminLayout() {
                       <Icon size={18} />
                       <span>{link.label}</span>
 
-                      {/* Unread badge for Messages */}
                       {isMessages && unreadCount > 0 ? (
                         <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
                           {unreadCount > 9 ? '9+' : unreadCount}

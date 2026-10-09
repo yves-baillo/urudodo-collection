@@ -31,7 +31,6 @@ export default function AdminSettings() {
 
   const [showPassword, setShowPassword] = useState(false)
 
-  // Image upload
   const [uploading, setUploading] = useState(false)
   const [imageMode, setImageMode] = useState('file')
   const fileInputRef = useRef(null)
@@ -58,7 +57,6 @@ export default function AdminSettings() {
   const handleChange = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value })
 
-  // ── File upload ──
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -87,27 +85,31 @@ export default function AdminSettings() {
     }
   }
 
-  // ── Submit ──
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSaving(true)
 
     try {
-      await saveAdmin({
+      const newAdmin = {
         username: form.username.trim(),
         password: form.password,
         avatar: form.avatar.trim(),
-      })
+      }
 
-      localStorage.setItem('adminUsername', form.username.trim())
+      await saveAdmin(newAdmin)
+
+      // Save to localStorage so the header reflects immediately
+      localStorage.setItem('adminUsername', newAdmin.username)
+      localStorage.setItem('adminAvatar', newAdmin.avatar)
 
       setSaving(false)
       setSaved(true)
 
+      // Full navigation so AdminLayout re-reads from JSONBin
       setTimeout(() => {
         setSaved(false)
-        window.location.reload()
+        window.location.href = '/admin/dashboard'
       }, 1200)
     } catch (err) {
       setError(err.message || 'Could not save settings')
@@ -160,11 +162,12 @@ export default function AdminSettings() {
             <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-amber-500/30 bg-neutral-900">
               {form.avatar ? (
                 <img
+                  key={form.avatar}
                   src={form.avatar}
                   alt="Avatar preview"
                   className="h-full w-full object-cover"
                   onError={(e) => {
-                    e.target.src = ''
+                    e.target.style.display = 'none'
                   }}
                 />
               ) : (
