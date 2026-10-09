@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { ArrowRight, ChevronDown } from 'lucide-react'
-import { brandInfo } from './data'
 
-const heroImages = [
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQneZZ1wGeOx233yJpPJ6pk_oik5HW_oDEOAGVOdnZONg&s=10',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&q=80',
-  'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1600&q=80',
-  'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80',
+const HERO_IMAGES = [
+  'https://i.postimg.cc/j55VzY3y/ur3.jpg',
+  'https://i.postimg.cc/kgQdCctb/ur4.jpg',
+  'https://i.postimg.cc/PJ0kXV4d/ur5.jpg',
+  'https://i.postimg.cc/KY5FPNZs/ur6.jpg',
+  'https://i.postimg.cc/c1kxkXQq/ur7.jpg',
+  'https://i.postimg.cc/3NNKJvQt/ur8.jpg',
 ]
 
 function Hero() {
@@ -15,16 +16,16 @@ function Hero() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length)
+      setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length)
     }, 5000)
     return () => clearInterval(interval)
   }, [])
 
   return (
-    <section className="relative h-200 w-full overflow-hidden bg-black">
+    <section className="relative h-screen w-full overflow-hidden bg-black">
 
-      {/* Background images */}
-      {heroImages.map((img, index) => (
+      {/* ═══ Rotating background images ═══ */}
+      {HERO_IMAGES.map((img, index) => (
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -33,45 +34,72 @@ function Hero() {
         >
           <img
             src={img}
-            alt="Urudodo Collections fashion"
+            alt="Urudodo Collection"
             className="h-full w-full object-cover"
           />
         </div>
       ))}
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60" />
+      {/* ═══ Dark overlay ═══ */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
 
-      {/* Centered content with motion */}
+      {/* ═══ Grid net ═══ */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.06]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* ═══ Centered content ═══ */}
       <div className="relative z-10 flex h-full items-center justify-center">
         <div className="mx-auto w-full max-w-4xl px-6 text-center md:px-12">
 
-          {/* Heading */}
+          {/* Small label */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-4 py-2 backdrop-blur-md"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <span className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">
+              Proudly Made in Rwanda
+            </span>
+          </motion.div>
+
+          {/* Main heading */}
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="mb-6 text-5xl font-bold leading-tight text-white md:text-7xl"
+            transition={{ duration: 1, delay: 0.3 }}
+            className="mb-6 text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl"
           >
-            {brandInfo.name}
+            Urudodo
+            <br />
+            <span className="text-amber-400">Collection</span>
           </motion.h1>
 
           {/* Tagline */}
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="mx-auto mb-10 max-w-2xl text-xl text-gray-200 md:text-2xl"
+            transition={{ duration: 1, delay: 0.6 }}
+            className="mx-auto mb-10 max-w-2xl text-lg font-light italic text-gray-200 sm:text-xl md:text-2xl"
           >
-            {brandInfo.tagline}
+            Threads of Rwandan Elegance
           </motion.p>
 
-          {/* CTAs */}
+          {/* CTA buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-4"
+            transition={{ duration: 1, delay: 0.9 }}
+            className="flex flex-wrap items-center justify-center gap-4"
           >
             <motion.a
               whileHover={{ scale: 1.05 }}
@@ -79,7 +107,7 @@ function Hero() {
               href="/collections"
               className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 font-semibold text-black transition-colors duration-300 hover:bg-amber-400"
             >
-              Explore Collections
+              Explore Collection
               <ArrowRight
                 size={20}
                 className="transition-transform duration-300 group-hover:translate-x-1"
@@ -99,9 +127,7 @@ function Hero() {
         </div>
       </div>
 
-      
-
-      {/* Scroll-down arrow */}
+      {/* ═══ Scroll-down indicator ═══ */}
       <motion.a
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
@@ -110,8 +136,8 @@ function Hero() {
           y: { repeat: Infinity, duration: 2, ease: 'easeInOut' },
         }}
         href="#about"
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-white/80 transition-colors hover:text-white"
         aria-label="Scroll down"
+        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-white/70 transition-colors hover:text-amber-400"
       >
         <ChevronDown size={32} />
       </motion.a>

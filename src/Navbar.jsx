@@ -7,7 +7,7 @@ import { getProducts } from './lib/jsonbin'
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
-  { name: 'Collections', path: '/collections' },
+  { name: 'Collection', path: '/collections' },
   { name: 'Visit Us', path: '/visit-us' },
   { name: 'Contact', path: '/contact' },
 ]

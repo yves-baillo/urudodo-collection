@@ -235,7 +235,7 @@ function About() {
             >
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrnZ4ioF_z86K6BE8yOPFIw__8J1j9q--7c-4e0GAeig&s=10"
-                alt="MUVARA Daniel — Founder of Urudodo Collections"
+                alt="MUVARA Daniel — Founder of Urudodo Collection"
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   e.target.src =

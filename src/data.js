@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────
 
 export const brandInfo = {
-  name: 'Urudodo Collections',
+  name: 'Urudodo Collection',
   tagline: 'Threads of Rwandan Elegance',
   subtitle: 'Proudly Made in Rwanda since 2019',
   origin:
@@ -76,7 +76,7 @@ export const contactInfo = {
   phone: '+250 789 215 052',
   whatsapp: '+250 789 215 052',
   whatsappMessage:
-    'Hello Urudodo Collections! I would like to inquire about your pieces.',
+    'Hello Urudodo Collection! I would like to inquire about your pieces.',
 }
 
 // ─────────────────────────────────────────────
